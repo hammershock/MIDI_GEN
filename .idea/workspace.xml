@@ -5,20 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e501b41e-d28d-4c8f-bba9-77bb86bbe429" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/figs/statics_all_midi.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/quantize.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/stats.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/tokenizer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/MidiGenerator.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/midi_io.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/music_bpe.py" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/datasets.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gpt2-distil-chinese-cluecorpussmall/flax_model.msgpack" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gpt2-distil-chinese-cluecorpussmall/tf_model.h5" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tokenizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/midi_data_encoder.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,10 +53,12 @@
   &quot;keyToString&quot;: {
     &quot;Python.dataset.executor&quot;: &quot;Run&quot;,
     &quot;Python.datasets.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.model.executor&quot;: &quot;Run&quot;,
     &quot;Python.music_bpe.executor&quot;: &quot;Run&quot;,
     &quot;Python.plot.executor&quot;: &quot;Run&quot;,
     &quot;Python.quantize.executor&quot;: &quot;Run&quot;,
     &quot;Python.stats.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_gpt.executor&quot;: &quot;Run&quot;,
     &quot;Python.tokenizer.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
@@ -82,12 +77,14 @@
       <recent name="$PROJECT_DIR$/figs" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/media" />
       <recent name="$PROJECT_DIR$/src" />
       <recent name="$PROJECT_DIR$/figs" />
       <recent name="$PROJECT_DIR$/data" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.tokenizer">
+  <component name="RunManager" selected="Python.model">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="MidiGenerator" />
       <option name="ENV_FILES" value="" />
@@ -111,7 +108,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="midi_io" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="model" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="MidiGenerator" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -125,7 +122,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/midi_io.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/model.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -180,7 +177,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="stats" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="test_gpt" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="MidiGenerator" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -189,12 +186,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/test" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/stats.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test/test_gpt.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -228,11 +225,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.model" />
+        <item itemvalue="Python.test_gpt" />
         <item itemvalue="Python.tokenizer" />
         <item itemvalue="Python.quantize" />
         <item itemvalue="Python.plot" />
-        <item itemvalue="Python.stats" />
-        <item itemvalue="Python.midi_io" />
       </list>
     </recent_temporary>
   </component>
@@ -255,7 +252,7 @@
       <workItem from="1716290349162" duration="1000" />
       <workItem from="1716308087686" duration="2265000" />
       <workItem from="1716344421381" duration="6721000" />
-      <workItem from="1716352441044" duration="11200000" />
+      <workItem from="1716352441044" duration="16262000" />
     </task>
     <servers />
   </component>
@@ -264,10 +261,12 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/MidiGenerator$music_bpe.coverage" NAME="music_bpe Coverage Results" MODIFIED="1716345424353" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MidiGenerator$model.coverage" NAME="model Coverage Results" MODIFIED="1716371967672" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/MidiGenerator$dataset.coverage" NAME="dataset Coverage Results" MODIFIED="1716352757338" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/MidiGenerator$stats.coverage" NAME="stats Coverage Results" MODIFIED="1716353899774" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/MidiGenerator$plot.coverage" NAME="plot Coverage Results" MODIFIED="1716361565790" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/MidiGenerator$tokenizer.coverage" NAME="tokenizer Coverage Results" MODIFIED="1716369052265" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/MidiGenerator$test_gpt.coverage" NAME="test_gpt Coverage Results" MODIFIED="1716371173234" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test" />
     <SUITE FILE_PATH="coverage/MidiGenerator$quantize.coverage" NAME="quantize Coverage Results" MODIFIED="1716365698594" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/figs" />
   </component>
 </project>

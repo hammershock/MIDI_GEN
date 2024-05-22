@@ -5,11 +5,10 @@ import json
 import numpy as np
 
 
-class Tokenizer:
+class MidiEncoder:
     def __init__(self, quantize_rule_file: str, min_pitch=50, max_pitch=108):
         self.min_pitch = min_pitch
         self.max_pitch = max_pitch
-        self.num_classes_pitch = max_pitch - min_pitch + 1
 
         with open(quantize_rule_file) as f:
             quantize_rules = json.load(f)
@@ -19,11 +18,14 @@ class Tokenizer:
         self.velocity_mean = 64.69024144892079
         self.velocity_std = 19.02232476382681
 
+        self.num_pitch = max_pitch - min_pitch + 1  # num classes of pitch
+        self.num_durations = len(self._quantized_durations)  # num classes of durations
+
     def _pitch_encode(self, pitch) -> int:
         if pitch < self.min_pitch:
             return 0
         elif pitch > self.max_pitch:
-            return self.num_classes_pitch - 1
+            return self.num_pitch - 1
         else:
             return pitch - self.min_pitch
 
@@ -54,11 +56,12 @@ class Tokenizer:
         return int(np.clip(velocity, 0, 255))
 
     def encode_note(self, note: dict) -> Tuple[int, int, int, float]:
-        pitch_encoded = self._pitch_encode(note['pitch'])
-        duration_encoded = self._quantize_encode(note['duration'], self._quantized_durations)
-        interval_encoded = self._quantize_encode(note['interval'], self._quantized_intervals)
-        velocity_encoded = self._encode_velocity(note['velocity'])
-        return pitch_encoded, duration_encoded, interval_encoded, velocity_encoded
+        pitch_id = self._pitch_encode(note['pitch'])
+        duration_id = self._quantize_encode(note['duration'], self._quantized_durations)
+        # interval_encoded = self._quantize_encode(note['interval'], self._quantized_intervals)
+        start_time_value = note['start']
+        velocity_value = self._encode_velocity(note['velocity'])
+        return pitch_id, duration_id, start_time_value, velocity_value
 
     def decode_note(self, token: Tuple[int, int, int, float]) -> dict:
         pitch_decoded = self._pitch_decode(token[0])
@@ -78,15 +81,15 @@ class Tokenizer:
 if __name__ == '__main__':
     from midi_io import get_midi_files, load_file, save_file
 
-    tokenizer = Tokenizer(quantize_rule_file='../figs/quantize_rules.json')
+    tokenizer = MidiEncoder(quantize_rule_file='../figs/quantize_rules.json')
     for filepath in get_midi_files("../data"):
         midi_data = load_file(filepath)
         inputs_ids = tokenizer.tokenize(midi_data)
         midi_data_recovered = tokenizer.token_from_id(inputs_ids)
         for note, note_recovered in zip(midi_data, midi_data_recovered):
             print(note['pitch'], note_recovered['pitch'])
-        save_file(midi_data_recovered, "./output.midi")
-        save_file(midi_data, "./input.midi")
+        save_file(midi_data_recovered, "../media/output.midi")
+        save_file(midi_data, "../media/input.midi")
         # print(midi_data_recovered)
         break
 

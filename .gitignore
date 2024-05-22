@@ -1,3 +1,6 @@
 /data/
 /.cache/
 /stats/
+/media/
+/test/
+/gpt2-distil-chinese-cluecorpussmall/
