@@ -38,7 +38,7 @@ https://storage.googleapis.com/magentadata/datasets/maestro/v3.0.0/maestro-v3.0.
 
 如何解码音符？
 使用多头分类器，分别输出音高pitch，强弱velocity，持续时间duration，距离上一个音符的偏移量offset
-- 音高使用离散分类器[55, 108]
+- 音高使用离散分类器[50, 108]
 - 强弱输出层velocity不采用激活函数，clip到-1到1.
 - duration离散化(0, 2.5)，使用分类器
 - offset离散化[0, 4)，使用分类器

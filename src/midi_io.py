@@ -4,6 +4,7 @@ from typing import List, Dict, Literal, Union
 
 from joblib import Memory
 from pretty_midi import PrettyMIDI, Instrument, Note
+from tqdm import tqdm
 
 memory = Memory('../.cache', verbose=0)
 
@@ -86,10 +87,11 @@ def load_metadata(file_path: str) -> Dict[str, Union[float, int, str]]:
 
 
 if __name__ == "__main__":
-    # data_dir = "../data"
-    # files = get_midi_files(data_dir)
-    # for file in tqdm(files):
-    #     midi_data = load_file(file)
+    data_dir = "../data"
+    files = get_midi_files(data_dir)
+    for file in tqdm(files):
+        midi_data = load_file(file)
+        print(len(midi_data))
 
-    metadata_path = "../data/maestro-v3.0.0/maestro-v3.0.0.json"
-    load_metadata(metadata_path)
+    # metadata_path = "../data/maestro-v3.0.0/maestro-v3.0.0.json"
+    # load_metadata(metadata_path)

@@ -57,13 +57,13 @@ class MidiEncoder:
         velocity = velocity * self.velocity_std + self.velocity_mean
         return int(np.clip(velocity, 0, 255))
 
-    def encode_note(self, note: dict) -> Tuple[int, int, int, float]:
+    def encode_note(self, note: dict) -> Tuple[int, int, int, float, float]:
         pitch_id = self._pitch_encode(note['pitch'])
         duration_id = self._quantize_encode(note['duration'], self._quantized_durations)
-        # interval_encoded = self._quantize_encode(note['interval'], self._quantized_intervals)
+        interval_encoded = self._quantize_encode(note['interval'], self._quantized_intervals)
         start_time_value = note['start']
         velocity_value = self._encode_velocity(note['velocity'])
-        return pitch_id, duration_id, start_time_value, velocity_value
+        return pitch_id, duration_id, interval_encoded, start_time_value, velocity_value
 
     def decode_note(self, token: Tuple[int, int, int, float]) -> dict:
         pitch_decoded = self._pitch_decode(token[0])

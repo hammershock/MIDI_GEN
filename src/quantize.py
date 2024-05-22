@@ -51,6 +51,7 @@ if __name__ == '__main__':
         quantized_data = {'duration': round_quantize(quantized_durations).tolist(),
                           'interval': round_quantize(quantized_interval).tolist()}
         json.dump(quantized_data, f)
+    # 绘制elbow law图
     # n_values = range(3, 128)
     # losses = []
     #
