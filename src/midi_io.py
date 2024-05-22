@@ -1,14 +1,12 @@
 import os
-import json
 from typing import List, Dict, Literal, Union
 
-from matplotlib import pyplot as plt
-from pretty_midi import PrettyMIDI
+from pretty_midi import PrettyMIDI, Instrument, Note
 from joblib import Memory
 from tqdm import tqdm
 
 
-memory = Memory('.cache', verbose=0)
+memory = Memory('../.cache', verbose=0)
 
 
 def get_midi_files(data_directory, ext="midi"):
@@ -21,7 +19,7 @@ def get_midi_files(data_directory, ext="midi"):
     return filepaths
 
 
-def process_data(midi_data: List[dict]):
+def _process_data(midi_data: List[dict]):
     midi_data.sort(key=lambda x: x['start'])
     last_start = 0
 
@@ -47,11 +45,32 @@ def load_file(file_path: str) -> List[Dict[Literal['start', 'end', 'pitch', 'vel
         }
         midi_data.append(data)
 
-    return process_data(midi_data)
+    return _process_data(midi_data)
+
+
+def save_file(midi_data: List[Dict[str, Union[float, int, str]]], file_path: str):
+    midi = PrettyMIDI()
+    instrument = Instrument(program=0)
+
+    current_time = 0
+    for note_data in midi_data:
+        start_time = current_time + note_data['interval']
+        end_time = start_time + note_data['duration']
+        note = Note(
+            velocity=int(note_data['velocity']),
+            pitch=int(note_data['pitch']),
+            start=start_time,
+            end=end_time
+        )
+        instrument.notes.append(note)
+        current_time = start_time
+
+    midi.instruments.append(instrument)
+    midi.write(file_path)
 
 
 if __name__ == "__main__":
-    data_dir = "./data"
+    data_dir = "../data"
     files = get_midi_files(data_dir)
     for file in tqdm(files):
         midi_data = load_file(file)

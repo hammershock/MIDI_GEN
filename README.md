@@ -31,13 +31,20 @@ https://storage.googleapis.com/magentadata/datasets/maestro/v3.0.0/maestro-v3.0.
 3. 强弱信息，0-1连续实值嵌入
 4. 将起始和终止符号视作一种特殊的音高
 
+ Velocity: 125
+ Pitch: 108
+ Duration: 9.78
+ Interval: 15.63
+
 如何解码音符？
 使用多头分类器，分别输出音高pitch，强弱velocity，持续时间duration，距离上一个音符的偏移量offset
-- 音高使用离散分类器
-- 强弱输出层不采用激活函数，clip到-1到1
-- duration离散化，使用分类器
-- offset离散化，使用分类器
+- 音高使用离散分类器[55, 108]
+- 强弱输出层velocity不采用激活函数，clip到-1到1.
+- duration离散化(0, 2.5)，使用分类器
+- offset离散化[0, 4)，使用分类器
 
+
+- velocity: (mean=64.69024144892079, std=19.02232476382681)
 ### 实现流程
 1. 预处理：
     切割序列，得到输入表示tokens
