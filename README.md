@@ -18,7 +18,7 @@ https://storage.googleapis.com/magentadata/datasets/maestro/v3.0.0/maestro-v3.0.
 ### 与文本生成的不同点：
 但是符号音乐生成，不同于文本生成，存在以下挑战：
 1. 多音轨（可能很多种类乐器，不同音符可能同时响起）
-2. 多维度：一个音符有多种属性
+2. 多维度：一个音符有多种属性（如强弱，音高，持续时间）
 
 我们只考虑钢琴这一种乐器，但是依然存在同一段时间很多音符响起的问题
 如何解决？
@@ -29,24 +29,30 @@ https://storage.googleapis.com/magentadata/datasets/maestro/v3.0.0/maestro-v3.0.
 1. 嵌入时间信息，正余弦位置编码
 2. 嵌入音高，考虑到音高的周期性，以12为周期（12平均律），正余弦位置编码
 3. 强弱信息，0-1连续实值嵌入
+4. 将起始和终止符号视作一种特殊的音高
 
 如何解码音符？
 使用多头分类器，分别输出音高pitch，强弱velocity，持续时间duration，距离上一个音符的偏移量offset
 - 音高使用离散分类器
 - 强弱输出层不采用激活函数，clip到-1到1
-- duration离散化，使用离散分类器
+- duration离散化，使用分类器
 - offset离散化，使用分类器
 
 ### 实现流程
 1. 预处理：
-    切割序列，得到输入表示
+    切割序列，得到输入表示tokens
+
 2. 模型结构
-- GPT架构
-- 词嵌入维度：64
-- 层数：6
-- pad长度128
-- token个数：（多维度，pitch128,offset和duration暂定）
-- 对于duration, offset和pitch输出层，添加HMM模型
+   - GPT架构
+   - 词嵌入维度：64
+   - 层数：6
+   - pad长度128
+   - token个数：（多维度，pitch128,offset和duration暂定）
+   - 对于duration, offset和pitch输出层，添加HMM模型
+
+3. 解码模块
+将token序列解码为midi音乐
+将midi音乐合成为音频
 
 ## 已完成:
 1. 统计其中第一个音乐的音频统计特征，绘制图表

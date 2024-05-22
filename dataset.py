@@ -21,22 +21,33 @@ def get_midi_files(data_directory, ext="midi"):
     return filepaths
 
 
-@memory.cache
-def load_file(file_path: str) -> List[Dict[Literal['start', 'end', 'pitch', 'velocity', 'instrument', 'duration'], Union[float, int, str]]]:
-    midi = PrettyMIDI(file_path)
-    midi_data = []
-    for instrument in midi.instruments:
-        for note in instrument.notes:
-            data = {
-                'start': note.start,
-                'end': note.end,  # end time ascends
-                'pitch': note.pitch,  # 0-127
-                'velocity': note.velocity,  # 0-127
-                'instrument': instrument.name,
-                'duration': note.end - note.start
-            }
-            midi_data.append(data)
+def process_data(midi_data: List[dict]):
+    midi_data.sort(key=lambda x: x['start'])
+    last_start = 0
+
+    for note in midi_data:
+        note['interval'] = note['start'] - last_start
+        last_start = note['start']
+
     return midi_data
+
+
+@memory.cache
+def load_file(file_path: str) -> List[Dict[Literal['start', 'end', 'pitch', 'velocity', 'duration', 'interval'], Union[float, int, str]]]:
+    midi = PrettyMIDI(file_path)
+
+    midi_data = []
+    for note in midi.instruments[0].notes:
+        data = {
+            'start': note.start,
+            'end': note.end,  # end time ascends
+            'pitch': note.pitch,  # 0-127
+            'velocity': note.velocity,  # 0-127
+            'duration': note.end - note.start
+        }
+        midi_data.append(data)
+
+    return process_data(midi_data)
 
 
 if __name__ == "__main__":
