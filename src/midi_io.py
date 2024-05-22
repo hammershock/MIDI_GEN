@@ -30,7 +30,7 @@ def _process_data(midi_data: List[dict]):
 
 
 @memory.cache
-def load_file(file_path: str, max_length=512) -> List[
+def load_file(file_path: str, max_length=None) -> List[
     Dict[Literal['start', 'end', 'pitch', 'velocity', 'duration', 'interval'], Union[float, int, str]]]:
     """
     load symbols from midi file and wrap the notes with start symbol and end symbol
@@ -40,7 +40,7 @@ def load_file(file_path: str, max_length=512) -> List[
     """
     midi = PrettyMIDI(file_path)
 
-    notes = midi.instruments[0].notes[:max_length - 2]
+    notes = midi.instruments[0].notes[:max_length - 2] if max_length is not None else midi.instruments[0].notes
 
     # We should find a good way to mark the special tokens, be sure special tokens has separate embeddings
     start_symbol = {'start': 0, 'end': 0, 'pitch': -1, 'velocity': 64, 'duration': 0}
