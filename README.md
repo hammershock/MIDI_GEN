@@ -1,8 +1,8 @@
 ## 数据集下载：
-[MAESTRO 数据集下载地址](https://magenta.tensorflow.org/datasets/maestro)
+https://storage.googleapis.com/magentadata/datasets/maestro/v3.0.0/maestro-v3.0.0-midi.zip
+下载之后解压缩到./data目录下
 
-下载V3.0.0 Midi版本，然后解压缩到./data/目录下
-
+源数据集地址：[MAESTRO 数据集地址](https://magenta.tensorflow.org/datasets/maestro)
 
 ## 设计思路：
 一种符号音乐生成模型（可以采用GPT架构）
@@ -41,17 +41,20 @@
 1. 预处理：
     切割序列，得到输入表示
 2. 模型结构
-GPT架构
-词嵌入维度：64
-层数：6
-pad长度128
-token个数：（多维度，pitch128,offset和duration暂定）
+- GPT架构
+- 词嵌入维度：64
+- 层数：6
+- pad长度128
+- token个数：（多维度，pitch128,offset和duration暂定）
+- 对于duration, offset和pitch输出层，添加HMM模型
 
 ## 已完成:
 1. 统计其中第一个音乐的音频统计特征，绘制图表
 
 
-## TODO:
+## TODO&成员分工:
 1. 需求分析
 2. 概要设计（5月28日前）
 3. 使用GPT架构的一个demo
+4. 实现一个前端，以供展示音乐生成
+

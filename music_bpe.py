@@ -44,5 +44,3 @@ if __name__ == '__main__':
             json.dump(stats, f)
         break
 
-
-
