@@ -1,8 +1,9 @@
-from typing import Sequence, List, Union, Tuple
+from typing import Sequence, List, Union, Tuple, Dict, Literal
 from bisect import bisect_left
 import json
 
 import numpy as np
+import torch
 
 
 class MidiEncoder:
@@ -73,26 +74,24 @@ class MidiEncoder:
         note = {"pitch": pitch_decoded, "duration": duration_decoded, "interval": interval_decoded, "velocity": velocity_decoded}
         return note
 
-    def encode_notes(self, midi_data: Sequence[dict]) -> List[Tuple[int, int, int, float]]:
-        return [self.encode_note(note) for note in midi_data]
+    def encode_notes(self, midi_data: Sequence[dict]) -> Dict[Literal['pitch_ids', 'duration_ids', 'interval_ids', 'start_times', 'velocities'], torch.Tensor]:
+        encoded_data = [self.encode_note(note) for note in midi_data]
+        pitch_ids, duration_ids, interval_ids, start_times, velocities = zip(*encoded_data)
+
+        pitch_ids = torch.LongTensor(pitch_ids)
+        duration_ids = torch.LongTensor(duration_ids)
+        interval_ids = torch.LongTensor(interval_ids)
+        start_times = torch.FloatTensor(start_times)
+        velocities = torch.FloatTensor(velocities)
+        return {
+            'pitch_ids': pitch_ids,  # note pitch symbols (special tokens included)
+            'duration_ids': duration_ids,  # note durations
+            'interval_ids': interval_ids,  # note intervals
+            'start_times': start_times,  # FloatTensor, we shall use a proper embeddings for it
+            'velocities': velocities,  # note intensity
+        }
 
     def decode_notes(self, ids: List[Tuple[int, int, int, float]]):
         return [self.decode_note(id) for id in ids]
-
-
-if __name__ == '__main__':
-    from midi_io import get_midi_files, load_file, save_file
-
-    tokenizer = MidiEncoder(quantize_rule_file='../figs/quantize_rules.json')
-    for filepath in get_midi_files("../data"):
-        midi_data = load_file(filepath)
-        inputs_ids = tokenizer.encode_notes(midi_data)
-        midi_data_recovered = tokenizer.decode_notes(inputs_ids)
-        for note, note_recovered in zip(midi_data, midi_data_recovered):
-            print(note['pitch'], note_recovered['pitch'])
-        save_file(midi_data_recovered, "../media/output.midi")
-        save_file(midi_data, "../media/input.midi")
-        # print(midi_data_recovered)
-        break
 
 

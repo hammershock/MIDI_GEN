@@ -6,6 +6,8 @@ from joblib import Memory
 from pretty_midi import PrettyMIDI, Instrument, Note
 from tqdm import tqdm
 
+from symbols import start_symbol
+
 memory = Memory('../.cache', verbose=0)
 
 
@@ -44,9 +46,7 @@ def load_file(file_path: str, max_length=None) -> List[
     notes = midi.instruments[0].notes[:max_length - 2] if max_length is not None else midi.instruments[0].notes
 
     # We should find a good way to mark the special tokens, be sure special tokens has separate embeddings
-    start_symbol = {'start': 0, 'end': 0, 'pitch': -1, 'velocity': 64, 'duration': 0}
     end_symbol = {'start': notes[-1].end, 'end': notes[-1].end, 'pitch': -2, 'velocity': 64, 'duration': 0}
-
     midi_data = [start_symbol] + [{
         'start': note.start,
         'end': note.end,  # end time ascends

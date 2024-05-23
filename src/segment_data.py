@@ -21,21 +21,6 @@ def segment_data(midi_data, max_length=256):
     return segments
 
 
-def get_segments(segment_dir):
-    segment_paths = []
-    for root, dirs, files in os.walk(segment_dir):
-        for file in files:
-            if file.endswith(".json"):
-                segment_paths.append(os.path.join(root, file))
-    return segment_paths
-
-
-def load_segment(segment_path):
-    with open(segment_path, 'r') as f:
-        data = json.load(f)
-        return data
-
-
 if __name__ == "__main__":
     os.makedirs('../data/segments', exist_ok=True)
 
