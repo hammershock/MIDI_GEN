@@ -6,3 +6,6 @@
 /gpt2-distil-chinese-cluecorpussmall/
 /data.zip
 /models/
+
+*.zip
+/datasets/cache/

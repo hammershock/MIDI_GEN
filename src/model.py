@@ -4,6 +4,7 @@ Transformer decoder-only model: GPT
 
 """
 import logging
+import math
 import os
 import sys
 from typing import Sequence, Tuple, List
@@ -40,25 +41,56 @@ class StartTimeEmbedding(nn.Module):
         return pe
 
 
-class MidiTransformer(nn.Module):
-    def __init__(self, pitch_vocab_size, duration_vocab_size, interval_vocab_size, embed_dim, num_heads, num_layers):
-        super(MidiTransformer, self).__init__()
-        self.embed_dim = embed_dim
+class PositionalEncoding(nn.Module):
+    def __init__(self, d_model, max_len=5000):
+        super(PositionalEncoding, self).__init__()
+        pe = torch.zeros(max_len, d_model)
+        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
 
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term)
+        pe = pe.unsqueeze(0).transpose(0, 1)
+        self.register_buffer('pe', pe)
+
+    def forward(self, x):
+        x = x + self.pe[:x.size(0), :]
+        return x
+
+
+class MidiTransformer(nn.Module):
+    def __init__(self, vocab_size, duration_vocab_size, num_heads, num_layers):
+        super(MidiTransformer, self).__init__()
         # Embedding layers
-        self.pitch_embedding = nn.Embedding(pitch_vocab_size, embed_dim)
-        self.duration_embedding = nn.Embedding(duration_vocab_size, embed_dim)
-        self.start_time_embedding = StartTimeEmbedding(embed_dim)
-        self.velocity_embedding = nn.Linear(1, embed_dim)
+        self.embedding = nn.Embedding(vocab_size, 48)
+        self.duration_embedding = nn.Embedding(duration_vocab_size, 24)
+        self.velocity_embedding = nn.Linear(1, 24)
+        # concat the embeddings above and add positional embeddings
+        self.positional_embedding = PositionalEncoding(96)
+
+        embed_dim = 96
 
         # Transformer decoder
         self.transformer = nn.Transformer(d_model=embed_dim, nhead=num_heads, num_decoder_layers=num_layers, batch_first=True)
 
         # Output heads
-        self.pitch_head = nn.Linear(embed_dim, pitch_vocab_size)
+        self.pitch_head = nn.Linear(embed_dim, vocab_size)
         self.duration_head = nn.Linear(embed_dim, duration_vocab_size)
-        self.interval_head = nn.Linear(embed_dim, interval_vocab_size)
         self.velocity_head = nn.Linear(embed_dim, 1)  # Regression output for velocities
+
+    def make_embeds(self, pitch_input_ids, duration_input_ids, velocity_input_ids):
+        # Get embeddings for each input type
+        pitch_embeds = self.embedding(pitch_input_ids)
+        duration_embeds = self.duration_embedding(duration_input_ids)
+        velocity_embeds = self.velocity_embedding(velocity_input_ids.unsqueeze(-1).float())
+
+        # Concatenate embeddings
+        combined_embeds = torch.cat((pitch_embeds, duration_embeds, velocity_embeds), dim=-1)
+
+        # Add positional embeddings
+        combined_embeds = self.positional_embedding(combined_embeds)
+
+        return combined_embeds
 
     def forward(self, input_embeds, attention_mask=None):
         # Transformer decoding
@@ -67,40 +99,6 @@ class MidiTransformer(nn.Module):
         # Output predictions
         pitch_logits = self.pitch_head(transformer_output)
         duration_logits = self.duration_head(transformer_output)
-        interval_logits = self.interval_head(transformer_output)
         velocity_logits = self.velocity_head(transformer_output)
 
-        return pitch_logits, duration_logits, interval_logits, velocity_logits
-
-    def make_embeds(self, pitch_input_ids, duration_input_ids, start_time_input_ids, velocity_input_ids):
-        # Combine embeddings
-        pitch_embeds = self.pitch_embedding(pitch_input_ids)
-        duration_embeds = self.duration_embedding(duration_input_ids)
-        start_time_embeds = self.start_time_embedding(start_time_input_ids)
-        velocity_embeds = self.velocity_embedding(velocity_input_ids.unsqueeze(-1))
-        return pitch_embeds + duration_embeds + start_time_embeds + velocity_embeds
-
-
-if __name__ == "__main__":
-    dataset = MidiDataset("../data/segments", max_seq_len=256)
-    # pitch_vocab_size = dataset.midi_encoder.num_pitch
-    pitch_vocab_size = 62
-    duration_vocab_size = 32
-    interval_vocab_size = 32
-
-    model = MidiTransformer(62, 32, 32, 96, 8, 6)
-
-    embed_dim = 96
-    num_heads = 8
-    num_layers = 6
-
-    lr = 1e-4
-    batch_size = 128
-    epochs = 10
-    save_path = "../models/model.pt"
-    log_filename = "../logs/train.log"
-
-    os.makedirs(os.path.dirname(save_path), exist_ok=True)
-    model = MidiTransformer(pitch_vocab_size, duration_vocab_size, interval_vocab_size, embed_dim, num_heads,
-                            num_layers)
-    torch.save(model.state_dict(), "../models/test.pt")
+        return pitch_logits, duration_logits, velocity_logits

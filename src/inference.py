@@ -8,7 +8,7 @@ from midi_data_encoder import MidiEncoder
 from symbols import start_symbol, end_symbol
 
 if __name__ == '__main__':
-    model_path = "../models/test.pt"
+    model_path = "../models/model.pt"
     seq_length = 500
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -33,17 +33,17 @@ if __name__ == '__main__':
         duration: int = duration_logit.argmax(dim=1).cpu().detach().numpy()[-1]
         interval: int = interval_logit.argmax(dim=1).cpu().detach().numpy()[-1]
         velocity: float = velocity_logit.squeeze(1).cpu().detach().numpy()[-1]
+        print(pitch_logit)
         note = encoder.decode_note((pitch, duration, interval, velocity))
         if note['pitch'] == end_symbol:
             break
         note['start'] = last_start + note['interval']
         note['end'] = note['start'] + note['duration']
         last_start = note['start']
-        print(last_start)
         midi_data.append(note)
 
     midi_data.pop(0)
-    for note in midi_data:
-        print(note['duration'], note['pitch'], note['velocity'], note['start'], note['end'])
+    # for note in midi_data:
+    #     print(note['duration'], note['pitch'], note['velocity'], note['start'], note['end'])
     save_file(midi_data, '../media/test.midi')
 

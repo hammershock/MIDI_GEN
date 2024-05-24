@@ -4,7 +4,7 @@ from typing import Dict, Literal
 
 import numpy as np
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 from tqdm import tqdm
 
 from midi_data_encoder import MidiEncoder
@@ -43,13 +43,14 @@ class MidiDataset(Dataset):
     def _build_cache(self):
         idx = 0
         for midi_file in tqdm(get_midi_files(self.data_path), "building cache"):
-            midi_data = load_file(midi_file, self.cache_files)
+            midi_data = load_file(midi_file)
             for data in segment_data(midi_data, self.max_seq_len):
                 pad_length = self.max_seq_len - len(data)
                 pad_symbol = {'start': 0, 'end': 0, 'pitch': -3, 'velocity': 64, 'duration': 0, 'interval': 0}
+                att_mask = [0] * len(data) + [1] * pad_length
+                assert len(att_mask) == self.max_seq_len
                 data += [pad_symbol] * pad_length
                 encoded_data = self.midi_encoder.encode_notes(data)
-                att_mask = [0] * len(data) + [1] * pad_length
                 encoded_data['attention_mask'] = np.array(att_mask).astype(np.bool_)
 
                 cache_file = os.path.join(self.cache_path, f"{idx}.npy")
@@ -62,10 +63,18 @@ class MidiDataset(Dataset):
     def __getitem__(self, idx) -> Dict[Literal[
         'pitch_ids', 'duration_ids', 'interval_ids', 'start_times', 'velocities', 'attention_mask'], torch.Tensor]:
         encoded_data = np.load(self.cache_files[idx], allow_pickle=True).item()
-        return {k: torch.tensor(v) for k, v in encoded_data.items()}
+        return encoded_data
 
 
 if __name__ == '__main__':
-    dataset = MidiDataset('../data/segments')
-    print(len(dataset))
-    print(dataset[0])
+    dataset = MidiDataset('../data')
+    dataloader = DataLoader(dataset, batch_size=1, shuffle=True)
+    for batch in tqdm(dataloader):
+        assert batch['pitch_ids'].shape[1] == 256
+        assert batch['duration_ids'].shape[1] == 256
+        assert batch['interval_ids'].shape[1] == 256
+        assert batch['start_times'].shape[1] == 256
+        assert batch['velocities'].shape[1] == 256
+        assert batch['attention_mask'].shape[1] == 256
+        # print(batch.shape, batch['duration_ids'].shape, batch['interval_ids'].shape)
+
